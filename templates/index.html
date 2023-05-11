@@ -1,14 +1,21 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ja">
 <head>
-  <title>ChatGPT Game</title>
+    <meta charset="UTF-8">
+    <title>ChatGPTとアキネーター</title>
 </head>
 <body>
-  <form method="POST">
-    <button type="submit" name="play">Play</button>
-    <input type="text" name="question" placeholder="Enter your question">
-    <button type="submit">Ask</button>
-  </form>
-  <p>{{ hint }}</p>
+    <h1>{{ message }}</h1>
+    {% if answer %}
+        <h2>正解です！私が考えていたのは{{ answer }}でした！</h2>
+    {% else %}
+        <form method="POST">
+            <input type="text" name="question" placeholder="質問を入力してください">
+            <input type="submit" value="質問する">
+        </form>
+        <form method="POST">
+            <button type="submit" name="play">Play</button>
+        </form>
+    {% endif %}
 </body>
 </html>
