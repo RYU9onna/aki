@@ -18,8 +18,8 @@ def home():
     if request.method == 'POST':
         if "play" in request.form:
             # GPT-3にトピックを考えさせる
-            response = openai.Completion.create(engine="text-davinci-003", prompt="Please think of a topic for a game of 20 questions.", max_tokens=60)
-            session['topic'] = response.choices[0].text.strip()
+            chat = openai.ChatCompletion.create(model="text-davinci-003", messages=[{"role": "system", "content": "あなたは親切なアシスタントです。"}, {"role": "user", "content": "20問ゲームのためのトピックを考えてください。"}])
+            session['topic'] = chat['choices'][0]['message']['content']
             return render_template('index.html', message="私が考えているのは何でしょう？質問して当ててみて")
         elif "surrender" in request.form:
             if 'topic' in session:
@@ -30,8 +30,8 @@ def home():
             if 'topic' in session:
                 question = request.form['question']
                 # GPT-3に質問を評価させる
-                response = openai.Completion.create(engine="text-davinci-003", prompt=f'The user is trying to guess a topic. They asked: "{question}". The topic is: "{session["topic"]}". Does their question apply to the topic?', max_tokens=60)
-                answer = response.choices[0].text.strip()
+                chat = openai.ChatCompletion.create(model="text-davinci-003", messages=[{"role": "system", "content": "あなたは親切なアシスタントです。"}, {"role": "user", "content": f'ユーザーはトピックを当てるために"{question}"と質問しました。トピックは"{session["topic"]}"です。彼らの質問はトピックに当てはまりますか？'}])
+                answer = chat['choices'][0]['message']['content']
                 return render_template('index.html', message=answer)
             else:
                 return render_template('index.html', message="まずPlayを押してください")
