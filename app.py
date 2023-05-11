@@ -18,7 +18,7 @@ def home():
     if request.method == 'POST':
         if "play" in request.form:
             # GPT-3にトピックを考えさせる
-            chat = openai.ChatCompletion.create(model="text-davinci-003", messages=[{"role": "system", "content": "あなたは親切なアシスタントです。"}, {"role": "user", "content": "20問ゲームのためのトピックを考えてください。"}])
+            chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "system", "content": "あなたは親切なアシスタントです。"}, {"role": "user", "content": "20問ゲームのためのトピックを考えてください。"}])
             session['topic'] = chat['choices'][0]['message']['content']
             return render_template('index.html', message="私が考えているのは何でしょう？質問して当ててみて")
         elif "surrender" in request.form:
