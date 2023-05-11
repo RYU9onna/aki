@@ -23,7 +23,7 @@ def home():
             return render_template('index.html', message="私が考えているのは何でしょう？質問して当ててみて")
         elif "question" in request.form:
             question = request.form['question']
-            answer = api.Completion.create(engine="text-davinci-002", prompt=f"この文は{session['topic']}についてのものですか？ {question}", max_tokens=1).choices[0].text.strip()
+            answer = openai.Completion.create(engine="text-davinci-002", prompt=f"この文は{session['topic']}についてのものですか？ {question}", max_tokens=1).choices[0].text.strip()
             return render_template('index.html', message=random.choice(responses[answer]), answer=session['topic'] if answer == "はい" else "")
     else:
         return render_template('index.html', message="Playを押してください")
