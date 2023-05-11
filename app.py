@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, session
-from openai import OpenAI, api
+import openai
 import os
 import random
 
