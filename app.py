@@ -1,59 +1,32 @@
-from flask import Flask, request, session, render_template
-import openai
+from flask import Flask, request, render_template, session
+from openai import OpenAI, api
 import os
 import random
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # セッションを安全に使用するための秘密鍵
+app.secret_key = os.urandom(24)
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    if request.method == "POST":
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+topics = ["ラーメン", "東京タワー", "ハリーポッター", "スズメ", "ビートルズ", "サッカー", "ビートルズ", "チョコレート", "ピアノ", "エッフェル塔"]
+responses = {
+    "はい": ["はい", "その通りです", "間違いありません"],
+    "いいえ": ["いいえ", "違います", "そうではありません"],
+    "どちらともいえない": ["どちらともいえない", "一概には言えません", "その質問は答えにくいです"]
+}
+
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    if request.method == 'POST':
         if "play" in request.form:
-            # 「Play」ボタンが押されたら新しいお題を生成
-            session['theme'] = get_new_theme()
-            session['message'] = "私が考えているのは何でしょう？質問して当ててみて"
+            session['topic'] = random.choice(topics)
+            return render_template('index.html', message="私が考えているのは何でしょう？質問して当ててみて")
         elif "question" in request.form:
-            # 質問が送信されたら答えを生成
-            question = request.form["question"]
-            session['message'] = generate_answer(question, session['theme'])
-    return render_template('index.html')  # HTML ファイルは適宜作成してください
+            question = request.form['question']
+            answer = api.Completion.create(engine="text-davinci-002", prompt=f"この文は{session['topic']}についてのものですか？ {question}", max_tokens=1).choices[0].text.strip()
+            return render_template('index.html', message=random.choice(responses[answer]), answer=session['topic'] if answer == "はい" else "")
+    else:
+        return render_template('index.html', message="Playを押してください")
 
-def get_new_theme():
-    openai.api_key = os.getenv('OPENAI_API_KEY')  # 環境変数からAPIキーを取得
-
-    categories = ["有名人", "食べ物", "動物", "映画", "曲", "本"]
-    category = random.choice(categories)
-
-    response = openai.ChatCompletion.create(
-      model="gpt-3.5-turbo",
-      messages=[
-            {"role": "system", "content": "あなたは一つのテーマを考えるようになりました。"},
-            {"role": "user", "content": f"{category}のお題を考えてください。"}
-        ]
-    )
-
-    theme = response['choices'][0]['message']['content']
-    return theme
-
-def generate_answer(question, theme):
-    openai.api_key = os.getenv('OPENAI_API_KEY')  # 環境変数からAPIキーを取得
-
-    response = openai.ChatCompletion.create(
-      model="gpt-3.5-turbo",
-      messages=[
-            {"role": "system", "content": f"あなたが考えているお題は{theme}です。"},
-            {"role": "user", "content": question}
-        ]
-    )
-
-    answer = response['choices'][0]['message']['content']
-
-    if theme in question:
-        session['theme'] = None
-        answer = f"正解です！私が考えていたのは{theme}です！"
-
-    return answer
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
