@@ -1,19 +1,20 @@
 from flask import Flask, request, render_template, session
-import openai
+from flask_session import Session  # セッション情報の管理
+from spacy import load  # 自然言語理解のライブラリ
 import os
 import random
 
+# FlaskとFlask-Sessionの設定
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# 自然言語理解モデルのロード
+nlp = load('en_core_web_sm')
 
+# トピックと応答
 topics = ["ラーメン", "東京タワー", "ハリーポッター", "スズメ", "ビートルズ", "サッカー", "ビートルズ", "チョコレート", "ピアノ", "エッフェル塔"]
-responses = {
-    "はい": ["はい", "その通りです", "間違いありません"],
-    "いいえ": ["いいえ", "違います", "そうではありません"],
-    "どちらともいえない": ["どちらともいえない", "一概には言えません", "その質問は答えにくいです"]
-}
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -28,17 +29,16 @@ def home():
                 if question == session['topic']:
                     return render_template('index.html', message="正解です！私が考えていたのは" + session['topic'] + "でした！", answer=session['topic'])
                 else:
-                    prompt = f"この文は{session['topic']}についてのものですか？ {question}"
-                    answer = openai.Completion.create(engine="text-davinci-002", prompt=prompt, max_tokens=3).choices[0].text.strip()
-                    if answer in responses:
-                        return render_template('index.html', message=random.choice(responses[answer]))
+                    # 自然言語理解を使用して、質問がトピックに関連しているかどうかを判断します
+                    doc = nlp(question)
+                    if session['topic'] in [token.lemma_ for token in doc]:
+                        return render_template('index.html', message="はい")
                     else:
-                        return render_template('index.html', message="考え中・・・")
+                        return render_template('index.html', message="いいえ")
             else:
                 return render_template('index.html', message="まずPlayを押してください")
     else:
         return render_template('index.html', message="Playを押してください")
-
 
 if __name__ == '__main__':
     app.run(debug=True)
