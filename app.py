@@ -1,11 +1,11 @@
 from flask import Flask, request, render_template, session
 from flask_session import Session  # セッション情報の管理
-from openai import ChatCompletion, set_openai_key  # OpenAIのGPT-3を使用するためのライブラリ
+import openai
 import os
 import random
 
 # OpenAIのAPIキーを設定
-set_openai_key('your_openai_key_here')
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # FlaskとFlask-Sessionの設定
 app = Flask(__name__)
