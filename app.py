@@ -11,14 +11,29 @@ app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
 # トピックと応答
-topics = ["ラーメン", "東京タワー", "ハリーポッター", "スズメ", "ビートルズ", "サッカー", "ビートルズ", "チョコレート", "ピアノ", "エッフェル塔"]
+topics = {
+    "ラーメン": {"size": "small", "type": "food"},
+    "東京タワー": {"size": "big", "type": "building"},
+    "ハリーポッター": {"size": "medium", "type": "person"},
+    "スズメ": {"size": "small", "type": "animal"},
+    "ビートルズ": {"size": "medium", "type": "group"},
+    "サッカー": {"size": "big", "type": "sport"},
+    "チョコレート": {"size": "small", "type": "food"},
+    "ピアノ": {"size": "big", "type": "instrument"},
+    "エッフェル塔": {"size": "big", "type": "building"}
+}
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
         if "play" in request.form:
-            session['topic'] = random.choice(topics)
+            session['topic'] = random.choice(list(topics.keys()))
             return render_template('index.html', message="私が考えているのは何でしょう？質問して当ててみて")
+        elif "surrender" in request.form:
+            if 'topic' in session:
+                return render_template('index.html', message="答えは" + session['topic'] + "でした", answer=session['topic'])
+            else:
+                return render_template('index.html', message="まずPlayを押してください")
         elif "question" in request.form:
             if 'topic' in session:
                 question = request.form['question']
@@ -28,10 +43,21 @@ def home():
                 else:
                     # 自然言語理解を使用して、質問がトピックに関連しているかどうかを判断します
                     blob = TextBlob(question)
-                    if session['topic'] in [word.lemma for word in blob.words]:
-                        return render_template('index.html', message="はい")
+                    if "大きい" in blob.words:
+                        if topics[session['topic']]['size'] == "big":
+                            return render_template('index.html', message="はい")
+                        else:
+                            return render_template('index.html', message="いいえ")
+                    elif "小さい" in blob.words:
+                        if topics[session['topic']]['size'] == "small":
+                            return render_template('index.html', message="はい")
+                        else:
+                            return render_template('index.html', message="いいえ")
                     else:
-                        return render_template('index.html', message="いいえ")
+                        if session['topic'] in [word.lemma for word in blob.words]:
+                            return render_template('index.html', message="はい")
+                        else:
+                            return render_template('index.html', message="いいえ")
             else:
                 return render_template('index.html', message="まずPlayを押してください")
     else:
