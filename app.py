@@ -34,8 +34,8 @@ def home():
                     return render_template('index.html', message=f"正解です！答えは {session['topic']} でした！", answer=session['topic'])
                 # GPT-4に質問を評価させる
                 chat = openai.ChatCompletion.create(model="gpt-3.5-turbo-0301", messages=[
-                    {"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。一言で簡単な返事をします。"},
-                    {"role": "user", "content": f'"{session["topic"]}"に対して、「"{question}"？」と質問します。どうですか？'}
+                    {"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。はい、いいえ、などの一言で簡単な返事をします。答えは言いません。"},
+                    {"role": "user", "content": f'"「{session["topic"]}"は、"{question}"？」と質問します。どうですか？'}
                 ])
                 answer = chat['choices'][0]['message']['content']
                 return render_template('index.html', message=answer)
