@@ -1,8 +1,11 @@
 from flask import Flask, request, render_template, session
 from flask_session import Session  # セッション情報の管理
-from textblob import TextBlob  # 自然言語理解のライブラリ
+from openai import ChatCompletion, set_openai_key  # OpenAIのGPT-3を使用するためのライブラリ
 import os
 import random
+
+# OpenAIのAPIキーを設定
+set_openai_key('your_openai_key_here')
 
 # FlaskとFlask-Sessionの設定
 app = Flask(__name__)
@@ -10,24 +13,13 @@ app.secret_key = os.urandom(24)
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
-# トピックと応答
-topics = {
-    "ラーメン": {"size": "small", "type": "food"},
-    "東京タワー": {"size": "big", "type": "building"},
-    "ハリーポッター": {"size": "medium", "type": "person"},
-    "スズメ": {"size": "small", "type": "animal"},
-    "ビートルズ": {"size": "medium", "type": "group"},
-    "サッカー": {"size": "big", "type": "sport"},
-    "チョコレート": {"size": "small", "type": "food"},
-    "ピアノ": {"size": "big", "type": "instrument"},
-    "エッフェル塔": {"size": "big", "type": "building"}
-}
-
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
         if "play" in request.form:
-            session['topic'] = random.choice(list(topics.keys()))
+            # GPT-3にトピックを考えさせる
+            chat = ChatCompletion.create(model="text-davinci-003", messages=[{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": "Please think of a topic for a game of 20 questions."}])
+            session['topic'] = chat['choices'][0]['message']['content']
             return render_template('index.html', message="私が考えているのは何でしょう？質問して当ててみて")
         elif "surrender" in request.form:
             if 'topic' in session:
@@ -37,27 +29,10 @@ def home():
         elif "question" in request.form:
             if 'topic' in session:
                 question = request.form['question']
-                # Check if the user has guessed the topic
-                if question == session['topic']:
-                    return render_template('index.html', message="正解です！私が考えていたのは" + session['topic'] + "でした！", answer=session['topic'])
-                else:
-                    # 自然言語理解を使用して、質問がトピックに関連しているかどうかを判断します
-                    blob = TextBlob(question)
-                    if "大きい" in blob.words:
-                        if topics[session['topic']]['size'] == "big":
-                            return render_template('index.html', message="はい")
-                        else:
-                            return render_template('index.html', message="いいえ")
-                    elif "小さい" in blob.words:
-                        if topics[session['topic']]['size'] == "small":
-                            return render_template('index.html', message="はい")
-                        else:
-                            return render_template('index.html', message="いいえ")
-                    else:
-                        if session['topic'] in [word.lemma for word in blob.words]:
-                            return render_template('index.html', message="はい")
-                        else:
-                            return render_template('index.html', message="いいえ")
+                # GPT-3に質問を評価させる
+                chat = ChatCompletion.create(model="text-davinci-003", messages=[{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": f'The user is trying to guess a topic. They asked: "{question}". The topic is: "{session["topic"]}". Does their question apply to the topic?'}])
+                answer = chat['choices'][0]['message']['content']
+                return render_template('index.html', message=answer)
             else:
                 return render_template('index.html', message="まずPlayを押してください")
     else:
