@@ -30,7 +30,7 @@ def home():
             if 'topic' in session:
                 question = request.form['question']
                 # GPT-3に質問を評価させる
-                chat = openai.ChatCompletion.create(model="text-davinci-003", messages=[{"role": "system", "content": "あなたは親切なアシスタントです。"}, {"role": "user", "content": f'ユーザーはトピックを当てるために"{question}"と質問しました。トピックは"{session["topic"]}"です。彼らの質問はトピックに当てはまりますか？'}])
+                chat = openai.ChatCompletion.create(model="gpt-3.5-turbo-0301", messages=[{"role": "system", "content": "あなたは親切なアシスタントです。"}, {"role": "user", "content": f'ユーザーはトピックを当てるために"{question}"と質問しました。トピックは"{session["topic"]}"です。彼らの質問はトピックに当てはまりますか？'}])
                 answer = chat['choices'][0]['message']['content']
                 return render_template('index.html', message=answer)
             else:
