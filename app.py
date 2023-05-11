@@ -1,20 +1,21 @@
 from flask import Flask, request, render_template, session
-from flask_session import Session  # セッション情報の管理
-from spacy import load  # 自然言語理解のライブラリ
+from flask_session import Session
 import os
 import random
+import spacy
 
-# FlaskとFlask-Sessionの設定
+# Flask and Flask-Session configuration
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_FILE_DIR'] = os.path.join(os.getcwd(), 'flask_session')
 Session(app)
 
-# 自然言語理解モデルのロード
-nlp = load('en_core_web_sm')
-
-# トピックと応答
+# Topics and responses
 topics = ["ラーメン", "東京タワー", "ハリーポッター", "スズメ", "ビートルズ", "サッカー", "ビートルズ", "チョコレート", "ピアノ", "エッフェル塔"]
+
+# Load the natural language understanding model
+nlp = spacy.load('en_core_web_sm')
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -29,7 +30,7 @@ def home():
                 if question == session['topic']:
                     return render_template('index.html', message="正解です！私が考えていたのは" + session['topic'] + "でした！", answer=session['topic'])
                 else:
-                    # 自然言語理解を使用して、質問がトピックに関連しているかどうかを判断します
+                    # Use natural language understanding to determine if the question is related to the topic
                     doc = nlp(question)
                     if session['topic'] in [token.lemma_ for token in doc]:
                         return render_template('index.html', message="はい")
