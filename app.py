@@ -29,6 +29,9 @@ def home():
         elif "question" in request.form:
             if 'topic' in session:
                 question = request.form['question']
+                # ユーザーが直接答えを推測した場合
+                if question == session['topic']:
+                    return render_template('index.html', message=f"正解です！答えは {session['topic']} でした！", answer=session['topic'])
                 # GPT-4に質問を評価させる
                 chat = openai.ChatCompletion.create(model="gpt-3.5-turbo-0301", messages=[
                     {"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。「はい」「少しそう」「どちらでもない」「違います」「少し違う」のいずれかだけで返事をします。"},
