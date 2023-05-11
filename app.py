@@ -26,18 +26,18 @@ def home():
                 return render_template('index.html', message="答えは" + session['topic'] + "でした", answer=session['topic'])
             else:
                 return render_template('index.html', message="まずPlayを押してください")
-    elif "question" in request.form:
-        if 'topic' in session:
-            question = request.form['question']
-            # ユーザーが直接答えを推測した場合
-            if question == session['topic']:
-                return render_template('index.html', message=f"正解です！答えは {session['topic']} でした！", answer=session['topic'])
-            # GPT-4に質問を評価させる
-            chat = openai.ChatCompletion.create(model="gpt-3.5-turbo-0301", messages=[{"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。「はい」「少しそう」「どちらでもない」「違います」「少し違う」のいずれかだけで返事をします。"}, {"role": "user", "content": f'私が答えに"{session["topic"]}"を選んでいます。私は答えに対して"{question}"と質問しました。質問に対して「はい」「少しそう」「どちらでもない」「違います」「少し違う」のいずれかだけで返事してください。'}])
-            answer = chat['choices'][0]['message']['content']
-            return render_template('index.html', message=answer)
-        else:
-            return render_template('index.html', message="まずPlayを押してください")
+        elif "question" in request.form:
+            if 'topic' in session:
+                question = request.form['question']
+                # GPT-4に質問を評価させる
+                chat = openai.ChatCompletion.create(model="gpt-3.5-turbo-0301", messages=[
+                    {"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。「はい」「少しそう」「どちらでもない」「違います」「少し違う」「正解です！答えは" + session['topic'] + "でした！」のいずれかだけで返事をします。"},
+                    {"role": "user", "content": f'私が答えに"{session["topic"]}"を選んでいます。私は答えに対して"{question}"と質問しました。'}
+                ])
+                answer = chat['choices'][0]['message']['content']
+                return render_template('index.html', message=answer)
+            else:
+                return render_template('index.html', message="まずPlayを押してください")
     else:
         return render_template('index.html', message="Playを押してください")
 
