@@ -18,7 +18,7 @@ def home():
     if request.method == 'POST':
         if "play" in request.form:
             # GPT-3にトピックを考えさせる
-            chat = openai.ChatCompletion.create(model="gpt-4", messages=[{"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。今から1つの道具、家電、物体、食べ物、生き物、日本の有名人などから名前だけを考えてください。"}, {"role": "user", "content": "道具、家電、物体、食べ物、生き物、日本の有名人などから名前を１つ決めてください。その名前だけ返事してください。"}], temperature=1.0)
+            chat = openai.ChatCompletion.create(model="gpt-4", messages=[{"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。今から1つの道具、家電、物体、食べ物、生き物、日本の有名人などから名前だけを考えてください。その名前だけ返事してください。"}, {"role": "user", "content": "名前を１つ決めてください。その名前だけ返事してください。"}], temperature=1.0)
             session['topic'] = chat['choices'][0]['message']['content']
             return render_template('index.html', message="私が考えているのは何でしょう？質問して当ててみて")
         elif "surrender" in request.form:
@@ -34,7 +34,7 @@ def home():
                     return render_template('index.html', message=f"正解です！答えは {session['topic']} でした！", answer=session['topic'])
                 # GPT-4に質問を評価させる
                 chat = openai.ChatCompletion.create(model="gpt-3.5-turbo-0301", messages=[
-                    {"role": "system", "content": "あなたは私の20問ゲームの対戦相手の女の子です。「はい」「少しそう」「どちらでもない」「違います」「少し違う」のいずれかを言い方は女の子っぽく変えたセリフだけで返事をします。"},
+                    {"role": "system", "content": "あなたは私の20問ゲームの対戦相手の女の子です。"{session["topic"]}"は答えなので言ってはいけません。「はい」「少しそう」「どちらでもない」「違います」「少し違う」のいずれかを言い方は女の子っぽく変えたセリフだけで返事をします。"},
                     {"role": "user", "content": f'あなたは答えに"{session["topic"]}"を選んでいます。私は答えに対して"{question}"と質問しました。'}
                 ])
                 answer = chat['choices'][0]['message']['content']
