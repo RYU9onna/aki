@@ -24,8 +24,16 @@ def home():
         elif "question" in request.form:
             if 'topic' in session:
                 question = request.form['question']
-                answer = openai.Completion.create(engine="text-davinci-002", prompt=f"この文は{session['topic']}についてのものですか？ {question}", max_tokens=1).choices[0].text.strip()
-                return render_template('index.html', message=random.choice(responses[answer]), answer=session['topic'] if answer == "はい" else "")
+                # Check if the user has guessed the topic
+                if question == session['topic']:
+                    return render_template('index.html', message="正解です！私が考えていたのは" + session['topic'] + "でした！", answer=session['topic'])
+                else:
+                    prompt = f"この文は{session['topic']}についてのものですか？ {question}"
+                    answer = openai.Completion.create(engine="text-davinci-002", prompt=prompt, max_tokens=3).choices[0].text.strip()
+                    if answer in responses:
+                        return render_template('index.html', message=random.choice(responses[answer]))
+                    else:
+                        return render_template('index.html', message="考え中・・・")
             else:
                 return render_template('index.html', message="まずPlayを押してください")
     else:
