@@ -47,8 +47,10 @@ def home():
                     answer = chat['choices'][0]['message']['content']
                     message = answer
                     playing = True
-            else:
-                message = "まずPlayを押してください"
+        else:
+            message = "まずPlayを押してください"
+    else:
+        message = "Playを押してください"
     return render_template('index.html', message=message, playing=playing)
 
 if __name__ == '__main__':
