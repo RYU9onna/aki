@@ -5,29 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>アキ姉ちゃんと遊ぼう</title>
     <style>
-        body {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-            input[type="text"], input[type="submit"], button {
-            width: 100%; /* 横幅を最大に */
-            box-sizing: border-box; /* ボーダーとパディングを含めたサイズを指定 */
-            height: 50px; /* 高さを50pxに */
-            font-size: 20px; /* フォントサイズを大きく */
-        }
-        form {
-            margin-bottom: 20px; /* フォームの下に20pxのマージンを追加 */
-        }
-        h1 {
-            font-size: 30px; /* h1タグのフォントサイズを30pxに設定 */
-        }
+    body {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    input[type="text"], input[type="submit"], button {
+        width: 100%; /* 横幅を最大に */
+        box-sizing: border-box; /* ボーダーとパディングを含めたサイズを指定 */
+        height: 50px; /* 高さを50pxに */
+        font-size: 20px; /* フォントサイズを大きく */
+    }
+    form {
+        margin-bottom: 20px; /* フォームの下に20pxのマージンを追加 */
+    }
+    h1 {
+        font-size: 30px; /* h1タグのフォントサイズを30pxに設定 */
+    }
+    .center-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
     </style>
 </head>
 <body>
     <p>アキ姉ちゃんと遊ぼう</p>
-    <img src="{{ url_for('static', filename=image) }}" alt="top image" style="width:150px;height:150px;">
-    <h1>{{ message }}</h1>
+    <<div class="center-content">
+        <img src="{{ url_for('static', filename=image) }}" alt="top image" style="width:150px;height:150px;">
+        <h1>{{ message }}</h1>
+    </div>
     {% if playing %}
         <form method="POST">
             <input type="text" name="question" placeholder="質問を入力してください">
