@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ChatGPTとアキネーター</title>
+    <title>アキ姉ちゃんと遊ぼう</title>
     <style>
-        input[type="text"], input[type="submit"], button {
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+            input[type="text"], input[type="submit"], button {
             width: 100%; /* 横幅を最大に */
+            box-sizing: border-box; /* ボーダーとパディングを含めたサイズを指定 */
             height: 50px; /* 高さを50pxに */
             font-size: 20px; /* フォントサイズを大きく */
         }
@@ -19,6 +25,7 @@
     </style>
 </head>
 <body>
+    <p>アキ姉ちゃんと遊ぼう</p>
     <img src="{{ url_for('static', filename=image) }}" alt="top image" style="width:150px;height:150px;">
     <h1>{{ message }}</h1>
     {% if playing %}
@@ -36,5 +43,6 @@
     {% endif %}
     <p>ベータ版ですのでご了承ください</p>
     <p>答えを当てるときは、単語だけを質問してください</p>
+    <a href="https://twitter.com/cheezekarubi">私のツイッター</a>
 </body>
 </html>
