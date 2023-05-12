@@ -14,16 +14,17 @@
 <body>
     <img src="{{ url_for('static', filename=image) }}" alt="top image" style="width:512px;height:512px;">
     <h1>{{ message }}</h1>
-    <form method="POST">
-        <input type="text" name="question" placeholder="質問を入力してください">
-        <input type="submit" value="質問する">
-    </form>
-    {% if not playing %}
+    {% if playing %}
         <form method="POST">
-            <button type="submit" name="play">Play</button>
+            <input type="text" name="question" placeholder="質問を入力してください">
+            <input type="submit" value="質問する">
         </form>
         <form method="POST">
             <button type="submit" name="surrender">降参</button>
+        </form>
+    {% else %}
+        <form method="POST">
+            <button type="submit" name="play">Play</button>
         </form>
     {% endif %}
     <p>ベータ版ですのでご了承ください</p>
