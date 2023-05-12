@@ -16,6 +16,8 @@ Session(app)
 @app.route('/', methods=['GET', 'POST'])
 def home():
     playing = False
+    if 'image' not in session:
+        session['image'] = 'top1.png'
     if request.method == 'POST':
         if "play" in request.form:
             # GPT-3にトピックを考えさせる
@@ -23,11 +25,13 @@ def home():
             session['topic'] = chat['choices'][0]['message']['content']
             message = "私が考えているのは何でしょう？質問して当ててみて"
             playing = True
+            session['image'] = 'top2.png'
         elif "surrender" in request.form:
             if 'topic' in session:
                 message = "答えは" + session['topic'] + "でした"
                 session.pop('topic', None)  # ゲームをリセット
                 playing = False
+                session['image'] = 'top4.png'
             else:
                 message = "まずPlayを押してください"
         elif "question" in request.form:
@@ -38,6 +42,7 @@ def home():
                     message = f"正解です！答えは {session['topic']} でした！"
                     session.pop('topic', None)  # ゲームをリセット
                     playing = False
+                    session['image'] = 'top3.png'
                 else:
                     # GPT-4に質問を評価させる
                     chat = openai.ChatCompletion.create(model="gpt-4", messages=[
@@ -47,11 +52,13 @@ def home():
                     answer = chat['choices'][0]['message']['content']
                     message = answer
                     playing = True
+            else:
+                message = "まずPlayを押してください"
         else:
             message = "まずPlayを押してください"
     else:
         message = "Playを押してください"
-    return render_template('index.html', message=message, playing=playing)
+    return render_template('index.html', message=message, playing=playing, image=session['image'])
 
 if __name__ == '__main__':
     app.run(debug=True)
