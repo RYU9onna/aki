@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>ChatGPTとアキネーター</title>
     <style>
-        input[type="text"], button {
+        input[type="text"], input[type="submit"], button {
             width: 100%; /* 横幅を最大に */
             height: 50px; /* 高さを50pxに */
             font-size: 20px; /* フォントサイズを大きく */
@@ -12,37 +12,20 @@
     </style>
 </head>
 <body>
-    {% if answer %}
-        <img src="{{ url_for('static', filename='top3.png') }}" alt="top image" width="512px">
-        <h2>正解です！私が考えていたのは{{ answer }}でした！</h2>
+    <h1>{{ message }}</h1>
+    <form method="POST">
+        <input type="text" name="question" placeholder="質問を入力してください">
+        <input type="submit" value="質問する">
+    </form>
+    {% if not playing %}
         <form method="POST">
-            <button type="submit" name="play" class="full-width-button">Play</button>
-        </form>
-    {% elif surrender %}
-        <img src="{{ url_for('static', filename='top4.png') }}" alt="top image" width="512px">
-        <h2>答えは{{ answer }}でした</h2>
-        <form method="POST">
-            <button type="submit" name="play" class="full-width-button">Play</button>
-        </form>
-    {% elif playing %}
-        <img src="{{ url_for('static', filename='top2.png') }}" alt="top image" width="512px">
-        <h1>{{ message }}</h1>
-        <form method="POST">
-            <input type="text" name="question" placeholder="質問を入力してください">
-            <input type="submit" value="質問する">
+            <button type="submit" name="play">Play</button>
         </form>
         <form method="POST">
-            <button type="submit" name="surrender" class="full-width-button">降参</button>
+            <button type="submit" name="surrender">降参</button>
         </form>
-    {% else %}
-        <img src="{{ url_for('static', filename='top1.png') }}" alt="top image" width="512px">
-        <form method="POST">
-            <button type="submit" name="play" class="full-width-button">Play</button>
-        </form>
-        <div class="description">
-            ・ベータ版ですのでご了承ください
-            ・答えを当てるときは、単語だけを質問してください
-        </div>
     {% endif %}
+    <p>ベータ版ですのでご了承ください</p>
+    <p>答えを当てるときは、単語だけを質問してください</p>
 </body>
 </html>
