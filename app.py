@@ -15,34 +15,28 @@ Session(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    playing = False
+    surrender = False
     if request.method == 'POST':
         if "play" in request.form:
-            # GPT-3にトピックを考えさせる
-            chat = openai.ChatCompletion.create(model="gpt-4", messages=[{"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。今から1つの道具、家電、物体、食べ物、生き物、日本の芸能人などから名前だけを考えてください。その名前だけ返事してください。"}, {"role": "user", "content": "名前を１つ決めてください。その名前だけ返事してください。"}], temperature=1.2)
-            session['topic'] = chat['choices'][0]['message']['content']
-            return render_template('index.html', message="私が考えているのは何でしょう？質問して当ててみて")
+            # ... (省略) ...
+            playing = True
         elif "surrender" in request.form:
             if 'topic' in session:
-                return render_template('index.html', message="答えは" + session['topic'] + "でした", answer=session['topic'])
+                surrender = True
+                return render_template('index.html', message="答えは" + session['topic'] + "でした", answer=session['topic'], surrender=surrender)
             else:
                 return render_template('index.html', message="まずPlayを押してください")
         elif "question" in request.form:
             if 'topic' in session:
-                question = request.form['question']
-                # ユーザーが直接答えを推測した場合
-                if question == session['topic']:
-                    return render_template('index.html', message=f"正解です！答えは {session['topic']} でした！", answer=session['topic'])
-                # GPT-4に質問を評価させる
-                chat = openai.ChatCompletion.create(model="gpt-4", messages=[
-                    {"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。"},
-                    {"role": "user", "content": f'"「{session["topic"]}"は、"{question}"？」と質問します。「はい」「少しそう」「どちらでもない」「違います」「少し違う」のいずれかだけで返事をします。'}
-                ])
-                answer = chat['choices'][0]['message']['content']
-                return render_template('index.html', message=answer)
+                # ... (省略) ...
+                playing = True
             else:
                 return render_template('index.html', message="まずPlayを押してください")
     else:
         return render_template('index.html', message="Playを押してください")
+
+    return render_template('index.html', message=message, playing=playing)
 
 if __name__ == '__main__':
     app.run(debug=True)
