@@ -3,22 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>ChatGPTとアキネーター</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+        .full-width-button {
+            width: 100%;
+            padding: 20px;
+            font-size: 20px;
+            margin-top: 10px;
+        }
+        .description {
+            padding: 10px;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ message }}</h1>
     {% if answer %}
+        <img src="{{ url_for('static', filename='top3.png') }}" alt="top image" width="512px">
         <h2>正解です！私が考えていたのは{{ answer }}でした！</h2>
-    {% else %}
+        <form method="POST">
+            <button type="submit" name="play" class="full-width-button">Play</button>
+        </form>
+    {% elif surrender %}
+        <img src="{{ url_for('static', filename='top4.png') }}" alt="top image" width="512px">
+        <h2>答えは{{ answer }}でした</h2>
+        <form method="POST">
+            <button type="submit" name="play" class="full-width-button">Play</button>
+        </form>
+    {% elif playing %}
+        <img src="{{ url_for('static', filename='top2.png') }}" alt="top image" width="512px">
+        <h1>{{ message }}</h1>
         <form method="POST">
             <input type="text" name="question" placeholder="質問を入力してください">
-            <input type="submit" value="質問する">
+            <input type="submit" value="質問する" class="full-width-button">
         </form>
         <form method="POST">
-            <button type="submit" name="play">Play</button>
+            <button type="submit" name="surrender" class="full-width-button">降参</button>
         </form>
+    {% else %}
+        <img src="{{ url_for('static', filename='top1.png') }}" alt="top image" width="512px">
         <form method="POST">
-            <button type="submit" name="surrender">降参</button>
+            <button type="submit" name="play" class="full-width-button">Play</button>
         </form>
+        <div class="description">
+            ・ベータ版ですのでご了承ください
+            ・答えを当てるときは、単語だけを質問してください
+        </div>
     {% endif %}
 </body>
 </html>
