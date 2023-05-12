@@ -15,7 +15,6 @@ Session(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    message = "Playを押してください"  # 初期メッセージを設定
     playing = False
     if request.method == 'POST':
         if "play" in request.form:
@@ -47,6 +46,7 @@ def home():
                     ])
                     answer = chat['choices'][0]['message']['content']
                     message = answer
+                    playing = True
             else:
                 message = "まずPlayを押してください"
     return render_template('index.html', message=message, playing=playing)
