@@ -20,7 +20,7 @@
         margin-bottom: 20px; /* フォームの下に20pxのマージンを追加 */
     }
     h1 {
-        font-size: 30px; /* h1タグのフォントサイズを30pxに設定 */
+        font-size: 24px; /* h1タグのフォントサイズを30pxに設定 */
     }
     .center-content {
         display: flex;
@@ -32,7 +32,7 @@
 </head>
 <body>
     <p>アキ姉ちゃんと遊ぼう</p>
-    <<div class="center-content">
+    <div class="center-content">
         <img src="{{ url_for('static', filename=image) }}" alt="top image" style="width:150px;height:150px;">
         <h1>{{ message }}</h1>
     </div>
