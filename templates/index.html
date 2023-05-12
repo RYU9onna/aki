@@ -13,10 +13,13 @@
         form {
             margin-bottom: 20px; /* フォームの下に20pxのマージンを追加 */
         }
+        h1 {
+            font-size: 30px; /* h1タグのフォントサイズを30pxに設定 */
+        }
     </style>
 </head>
 <body>
-    <img src="{{ url_for('static', filename=image) }}" alt="top image" style="width:512px;height:512px;">
+    <img src="{{ url_for('static', filename=image) }}" alt="top image" style="width:150px;height:150px;">
     <h1>{{ message }}</h1>
     {% if playing %}
         <form method="POST">
