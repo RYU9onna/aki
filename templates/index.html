@@ -35,6 +35,35 @@
         justify-content: center;
     }
     </style>
+    <script>
+        // ページが読み込まれたときに実行
+        window.onload = function() {
+            // ボタンを再表示
+            var buttons = document.getElementsByTagName("button");
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].disabled = false;
+            }
+            var inputs = document.getElementsByTagName("input");
+            for (var i = 0; i < inputs.length; i++) {
+                if (inputs[i].type == "submit") {
+                    inputs[i].disabled = false;
+                }
+            }
+        }
+        // 送信ボタンが押されたときに実行
+        function disableButtons() {
+            var buttons = document.getElementsByTagName("button");
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].disabled = true;
+            }
+            var inputs = document.getElementsByTagName("input");
+            for (var i = 0; i < inputs.length; i++) {
+                if (inputs[i].type == "submit") {
+                    inputs[i].disabled = true;
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <p>アキ姉ちゃんと遊ぼう</p>
@@ -43,15 +72,15 @@
         <h1>{{ message }}</h1>
     </div>
     {% if playing %}
-        <form method="POST">
-            <input type="text" name="question" placeholder="質問を入力してください">
+        <form method="POST" onsubmit="disableButtons()">
+            <input type="text" name="question" placeholder="質問を入力してください" required>
             <input type="submit" value="質問する">
         </form>
-        <form method="POST">
+        <form method="POST" onsubmit="disableButtons()">
             <button type="submit" name="surrender">降参</button>
         </form>
     {% else %}
-        <form method="POST">
+        <form method="POST" onsubmit="disableButtons()">
             <button type="submit" name="play">Play</button>
         </form>
     {% endif %}
