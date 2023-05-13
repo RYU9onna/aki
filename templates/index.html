@@ -44,7 +44,7 @@
     </div>
     {% if playing %}
         <form method="POST">
-            <input type="text" name="question" placeholder="質問を入力してください">
+            <input type="text" name="question" placeholder="質問を入力してください" required> <!-- required属性を追加 -->
             <input type="submit" value="質問する">
         </form>
         <form method="POST">
