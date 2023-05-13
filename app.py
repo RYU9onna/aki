@@ -15,7 +15,6 @@ Session(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    message = "" # ここで'message'を初期化します
     playing = False
     if 'image' not in session:
         session['image'] = 'top1.png'
@@ -38,30 +37,28 @@ def home():
         elif "question" in request.form:
             if 'topic' in session:
                 question = request.form['question']
-                # ユーザーが何も入力していない場合
-                if not question.strip():
-                    message = "質問を入力してください"
+                # ユーザーが直接答えを推測した場合
+                if question == session['topic']:
+                    message = f"正解です！答えは {session['topic']} でした！"
+                    session.pop('topic', None)  # ゲームをリセット
+                    playing = False
+                    session['image'] = 'top3.png'
                 else:
-                    # ユーザーが直接答えを推測した場合
-                    if question == session['topic']:
-                        message = f"正解です！答えは {session['topic']} でした！"
-                        session.pop('topic', None)  # ゲームをリセット
-                        playing = False
-                        session['image'] = 'top3.png'
-                    else:
-                        # GPT-4に質問を評価させる
-                        chat = openai.ChatCompletion.create(model="gpt-4", messages=[
-                            {"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。"},
-                            {"role": "user", "content": f'"「{session["topic"]}"は、"{question}"？」と質問します。「はい」「少しそう」「どちらでもない」「違います」「少し違う」のいずれかだけで返事をします。'}
-                        ])
-                        answer = chat['choices'][0]['message']['content']
-                        message = answer
-                        playing = True
+                    # GPT-4に質問を評価させる
+                    chat = openai.ChatCompletion.create(model="gpt-4", messages=[
+                        {"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。"},
+                        {"role": "user", "content": f'"「{session["topic"]}"は、"{question}"？」と質問します。「はい」「少しそう」「どちらでもない」「違います」「少し違う」のいずれかだけで返事をします。'}
+                    ])
+                    answer = chat['choices'][0]['message']['content']
+                    message = answer
+                    playing = True
             else:
                 message = "まずPlayを押してください"
+        else:
+            message = "まずPlayを押してください"
     else:
-        message = ""
+        message = "Playを押してください"
     return render_template('index.html', message=message, playing=playing, image=session['image'])
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
