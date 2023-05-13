@@ -36,25 +36,22 @@ def home():
                 message = "まずPlayを押してください"
         elif "question" in request.form:
             if 'topic' in session:
-                question = request.form.get('question', '').strip()  # 前後の空白を削除
-                if not question:  # 入力がない場合
-                    message = "質問を入力してください"
-                elif question == session['topic']:
-                    # ユーザーが直接答えを推測した場合
-                    if question == session['topic']:
-                        message = f"正解です！答えは {session['topic']} でした！"
-                        session.pop('topic', None)  # ゲームをリセット
-                        playing = False
-                        session['image'] = 'top3.png'
-                    else:
-                        # GPT-4に質問を評価させる
-                        chat = openai.ChatCompletion.create(model="gpt-4", messages=[
-                            {"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。"},
-                            {"role": "user", "content": f'"「{session["topic"]}"は、"{question}"？」と質問します。「はい」「少しそう」「どちらでもない」「違います」「少し違う」のいずれかだけで返事をします。'}
-                        ])
-                        answer = chat['choices'][0]['message']['content']
-                        message = answer
-                        playing = True
+                question = request.form['question']
+                # ユーザーが直接答えを推測した場合
+                if question == session['topic']:
+                    message = f"正解です！答えは {session['topic']} でした！"
+                    session.pop('topic', None)  # ゲームをリセット
+                    playing = False
+                    session['image'] = 'top3.png'
+                else:
+                    # GPT-4に質問を評価させる
+                    chat = openai.ChatCompletion.create(model="gpt-4", messages=[
+                        {"role": "system", "content": "あなたは私の20問ゲームの対戦相手です。"},
+                        {"role": "user", "content": f'"「{session["topic"]}"は、"{question}"？」と質問します。「はい」「少しそう」「どちらでもない」「違います」「少し違う」のいずれかだけで返事をします。'}
+                    ])
+                    answer = chat['choices'][0]['message']['content']
+                    message = answer
+                    playing = True
             else:
                 message = "まずPlayを押してください"
         else:
@@ -65,3 +62,4 @@ def home():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
