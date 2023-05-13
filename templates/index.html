@@ -2,14 +2,14 @@
 <html lang="ja">
 <head>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <meta property="og:title" content="アキ姉ちゃんと遊ぼう">
+    <meta property="og:title" content="アキ姉ちゃん">
     <meta property="og:description" content="ChatGPTのアキ姉ちゃんに質問して何を連想しているか当ててみよう！">
     <meta property="og:image" content="{{ url_for('static', filename='thumbnail.png', _external=True) }}">
     <meta property="og:url" content="{{ request.url }}">
     <meta property="og:type" content="website">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>アキ姉ちゃんと遊ぼう</title>
+    <title>アキ姉ちゃん</title>
     <style>
     body {
         box-sizing: border-box;
@@ -55,8 +55,20 @@
             <button type="submit" name="play">Play</button>
         </form>
     {% endif %}
-    <p>ベータ版ですのでご了承ください</p>
-    <p>答えを当てるときは、単語だけを質問してください</p>
-    <a href="https://twitter.com/cheezekarubi">作者ツイッター</a>
+    <p>ChatGPTの答えや返答が間違っている場合もあります</p>
+    <p>答えを当てる時は"単語"だけ入力して質問して下さい</p>
+    <a href="https://twitter.com/aki_ne_chan" target="_blank" rel="noopener noreferrer">私のツイッター</a>
+    <p></p>
+    <p></p>
+    <form method="POST">
+    <input type="text" name="api_key" placeholder="OPENAI_API_KEYを入力してください">
+        <button type="submit" name="set_api_key">APIキーをセット</button>
+    </form>
+    <!-- APIキーを解除するボタン -->
+    <form method="POST">
+        <button type="submit" name="clear_api_key">APIキーを解除</button>
+    </form>
+    <p></p>
+    <p></p>
 </body>
 </html>
