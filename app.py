@@ -56,8 +56,8 @@ def home():
                         answer = chat['choices'][0]['message']['content']
                         message = answer
                         playing = True
-                else:
-                    message = "まずPlayを押してください"
+            else:
+                message = "まずPlayを押してください"
     else:
         message = ""
     return render_template('index.html', message=message, playing=playing, image=session['image'])
