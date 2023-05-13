@@ -15,6 +15,7 @@ Session(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    message = "" # ここで'message'を初期化します
     playing = False
     if 'image' not in session:
         session['image'] = 'top1.png'
